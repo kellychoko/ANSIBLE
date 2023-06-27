@@ -1,0 +1,33 @@
+- name: Installing jenkins on web severs
+  hosts: all
+  become: true
+  tasks: 
+    - name: download jenkins.repo file
+      get_url: 
+        url:  https://pkg.jenkins.io/redhat-stable/jenkins.repo
+        dest: /etc/yum.repos.d/jenkins.repo
+    - name: import jenkins keys
+      rpm_key:
+        state: present 
+        key: https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key 
+    - name: update packages 
+      yum: 
+        name: "*" 
+        state: latest 
+    - name: install java 
+      yum: 
+        name: java-11-amazon-corretto-devel
+        state: latest 
+    - name: install jenkins
+      yum: 
+        name: jenkins
+        state: latest 
+- name: enable and restart jenkins 
+  hosts: all 
+  become: true 
+  tasks: 
+    - name: enable jenkins 
+      service: 
+        name: jenkins 
+        enabled: yes 
+        state: started 
